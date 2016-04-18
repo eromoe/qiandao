@@ -27,6 +27,11 @@ class BaseDB(object):
 
     @property
     def dbcur(self):
+        if self.conn.unread_result:
+            try:
+                self.conn.get_rows()
+            except:
+                pass
         self.conn.ping(reconnect=True)
         return self.conn.cursor()
 
