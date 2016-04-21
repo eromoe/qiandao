@@ -1,15 +1,6 @@
-/article_fetcher.db
-/static/
-/media/job_upload
-/venv/
-/txt*/*
-/conf/local_settings.py
+.idea
 /logs/*
-/ts/
-*.tar.gz
-*.zip
 *.log
-local_config.py
 
 *.py[cod]
 
