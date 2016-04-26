@@ -38,8 +38,12 @@ class Fetcher(object):
 
     def render(self, request, env, session={}):
         request = dict(request)
-        _cookies = cookie_utils.CookieSession()
-        _cookies.from_json(session)
+        if isinstance(session, cookie_utils.CookieSession):
+            _cookies = session
+        else:
+            _cookies = cookie_utils.CookieSession()
+            _cookies.from_json(session)
+
         def _render(obj, key):
             if not obj.get(key):
                 return
