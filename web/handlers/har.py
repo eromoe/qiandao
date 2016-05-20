@@ -13,6 +13,22 @@ from jinja2 import Environment, meta
 
 from base import *
 
+class HARDownload(BaseHandler):
+    def get(self, id=None):
+        user = self.current_user
+
+        tpl = self.check_permission(
+                self.db.tpl.get(id, fields=('id', 'userid', 'sitename', 'siteurl', 'banner', 'note', 'interval',
+                    'har', 'variables', 'lock')))
+
+        tpl['har'] = self.db.user.decrypt(tpl['userid'], tpl['har'])
+
+        self.set_header('Content-Type', 'application/octet-stream')
+        self.set_header('Content-Disposition', 'attachment; filename=' + tpl['sitename']+'.har')
+        self.write(tpl['har'])
+        self.finish()
+
+
 class HAREditor(BaseHandler):
     def get(self, id=None):
         return self.render('har/editor.html', tplid=id)
@@ -134,6 +150,7 @@ class HARSave(BaseHandler):
 handlers = [
         (r'/tpl/(\d+)/edit', HAREditor),
         (r'/tpl/(\d+)/save', HARSave),
+        (r'/tpl/(\d+)/download', HARDownload),
 
         (r'/har/edit', HAREditor),
         (r'/har/save/?(\d+)?', HARSave),
