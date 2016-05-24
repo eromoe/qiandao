@@ -8,11 +8,11 @@
 import socket
 import struct
 
-def ip2int(addr):                                                               
-    return struct.unpack("!I", socket.inet_aton(addr))[0]                       
+def ip2int(addr):
+    return struct.unpack("!I", socket.inet_aton(addr))[0]
 
-def int2ip(addr):                                                               
-    return socket.inet_ntoa(struct.pack("!I", addr))                            
+def int2ip(addr):
+    return socket.inet_ntoa(struct.pack("!I", addr))
 
 
 import umsgpack
@@ -208,6 +208,7 @@ def quote_chinese(url, encodeing="utf-8"):
 
 import hashlib
 md5string = lambda x: hashlib.md5(utf8(x)).hexdigest()
+
 
 jinja_globals = {
     'md5': md5string,
