@@ -106,6 +106,10 @@ class HARSave(BaseHandler):
 
             variables.update(var - extracted)
             extracted.update(set(x['name'] for x in rule.get('extract_variables', [])))
+
+            if '_cookies' in variables:
+                variables.remove('_cookies')
+
         return variables
 
     @tornado.web.authenticated
