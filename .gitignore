@@ -1,3 +1,5 @@
+local_config.py
+
 .idea
 /logs/*
 *.log
