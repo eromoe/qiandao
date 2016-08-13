@@ -18,6 +18,7 @@ try:
     import pycurl
 except ImportError as e:
     pycurl = None
+import jinja2
 from jinja2 import Environment
 from tornado import gen, httpclient
 
@@ -35,6 +36,9 @@ class Fetcher(object):
         self.download_size_limit = download_size_limit
         self.jinja_env = Environment()
         self.jinja_env.globals = utils.jinja_globals
+        for k, v in utils.jinja_globals.items():
+            jinja2.filters.FILTERS[k] = v
+
 
     def render(self, request, env, session={}):
         request = dict(request)
@@ -97,6 +101,7 @@ class Fetcher(object):
                 allow_nonstandard_methods = True,
                 allow_ipv6 = True,
                 prepare_curl_callback = set_size_limit_callback,
+                validate_cert=False, # windows SSL certificate problem
                 )
 
         session = cookie_utils.CookieSession()
@@ -306,8 +311,8 @@ class Fetcher(object):
         """
         obj = {
           request: {
-            method: 
-            url: 
+            method:
+            url:
             headers: [{name: , value: }, ]
             cookies: [{name: , value: }, ]
             data:

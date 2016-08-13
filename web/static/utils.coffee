@@ -32,27 +32,57 @@ define (require) ->
 
     querystring_parse: node_querystring.parse
     querystring_unparse: node_querystring.stringify
-    querystring_unparse_with_variables: (obj) ->
+    _querystring_unparse_with_variables: (obj) ->
       query = node_querystring.stringify(obj)
 
       replace_list = {}
+      re = /{{\s*([\w]+)[^}]*?\s*}}/g
+
       for key, value of obj
-        re = /{{\s*([\w]+)[^}]*?\s*}}/g
         while m = re.exec(key)
           replace_list[encodeURIComponent(m[0])] = m[0][..-3] + '|urlencode}}'
-        re = /{{\s*([\w]+)[^}]*?\s*}}/g
         while m = re.exec(value)
-          replace_list[encodeURIComponent(m[0])] = m[0][..-3] + '|urlencode}}'
+          if value.indexOf('|raw') > -1 or value.indexOf('|urlencode') > -1
+            replace_list[encodeURIComponent(m[0])] = m[0]
+          else
+            replace_list[encodeURIComponent(m[0])] = m[0][..-3] + '|urlencode}}'
       console.log(replace_list)
       for key, value of replace_list
         query = query.replace(new RegExp(RegExp.escape(key), 'g'), value)
       return query
-    querystring_parse_with_variables: (query) ->
+    _querystring_parse_with_variables: (query) ->
       replace_list = {}
       re = /{{\s*([\w]+)[^}]*?\s*\|urlencode}}/g
       _query = decodeURIComponent(query)
       while m = re.exec(_query)
         replace_list[encodeURIComponent(m[0])] = m[0][..-13]+'}}'
+      for key, value of replace_list
+        query = query.replace(new RegExp(RegExp.escape(key), 'g'), value)
+
+      return exports.querystring_parse(query)
+
+    querystring_unparse_with_variables: (obj) ->
+      query = node_querystring.stringify(obj)
+      replace_list = {}
+      re = /{{\s*([\w]+)[^}]*?\s*}}/g
+
+      for key, value of obj
+        while m = re.exec(key)
+          replace_list[encodeURIComponent(m[0])] = m[0]
+        while m = re.exec(value)
+          replace_list[encodeURIComponent(m[0])] = m[0]
+
+      console.log(replace_list)
+      for key, value of replace_list
+        query = query.replace(new RegExp(RegExp.escape(key), 'g'), value)
+      return query
+
+    querystring_parse_with_variables: (query) ->
+      replace_list = {}
+      re = /{{\s*([\w]+)[^}]*?\s*\}}/g
+      _query = decodeURIComponent(query)
+      while m = re.exec(_query)
+        replace_list[encodeURIComponent(m[0])] = m[0]
       for key, value of replace_list
         query = query.replace(new RegExp(RegExp.escape(key), 'g'), value)
 
